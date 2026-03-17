@@ -84,7 +84,7 @@ def auth():
 @handle_error
 def auth_status():
     """Check authentication status."""
-    emit(run_notebooklm(["status"], json_output=_json_output))
+    emit(run_notebooklm(["auth", "check"], json_output=_json_output))
 
 
 @auth.command("login")

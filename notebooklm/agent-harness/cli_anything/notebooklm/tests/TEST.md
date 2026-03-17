@@ -62,3 +62,28 @@ python3 -m cli_anything.notebooklm.notebooklm_cli --help
 
 - Added doc-level assertions so the package README and skill file now explicitly cover installation, tests, safety boundaries, and unofficial Google attribution.
 - Added `_resolve_cli`-style subprocess smoke coverage so the CLI can be exercised through a resolved command path, not only through Click's in-process test runner.
+
+## Review Fix Verification
+
+Verified on 2026-03-17 after addressing PR review feedback about JSON passthrough and auth command semantics.
+
+### Commands Run
+
+```bash
+python3 -m pytest cli_anything/notebooklm/tests/test_core.py -q
+python3 -m pytest cli_anything/notebooklm/tests/test_cli_smoke.py -q
+python3 -m pytest cli_anything/notebooklm/tests -q
+python3 -m cli_anything.notebooklm.notebooklm_cli --json auth login
+```
+
+### Results
+
+- targeted backend tests: pass
+- targeted CLI routing tests: pass
+- full NotebookLM harness suite: pass
+- `--json auth login`: fails fast with a structured JSON error instead of passing an invalid `--json` flag through to upstream login
+
+### Notes
+
+- `auth status` now wraps upstream `notebooklm auth check`, which matches authentication semantics.
+- JSON passthrough is now limited to wrapper commands whose upstream `notebooklm` command has verified `--json` support.

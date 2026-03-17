@@ -9,7 +9,9 @@ import pytest
 from cli_anything.notebooklm.core.session import Session
 from cli_anything.notebooklm.utils.notebooklm_backend import (
     build_command,
+    command_supports_json,
     require_notebooklm,
+    run_notebooklm,
     sanitize_error,
 )
 
@@ -44,6 +46,20 @@ class TestCommandBuilder:
     def test_build_command_without_notebook_id(self):
         command = build_command(["list"])
         assert command == ["notebooklm", "list"]
+
+    def test_command_supports_json_for_verified_command(self):
+        assert command_supports_json(["download", "report"]) is True
+
+    def test_command_supports_json_rejects_unsupported_command(self):
+        assert command_supports_json(["login"]) is False
+
+
+class TestRunNotebooklm:
+    def test_run_notebooklm_rejects_json_for_unsupported_command(self):
+        with patch("cli_anything.notebooklm.utils.notebooklm_backend.subprocess.run") as run_mock:
+            with pytest.raises(RuntimeError, match="JSON output is not supported for command: login"):
+                run_notebooklm(["login"], json_output=True)
+        run_mock.assert_not_called()
 
 
 class TestErrorSanitization:

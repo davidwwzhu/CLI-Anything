@@ -21,6 +21,23 @@ import shutil
 import subprocess
 
 
+JSON_SUPPORTED_COMMANDS = {
+    ("auth", "check"),
+    ("status",),
+    ("list",),
+    ("create",),
+    ("source", "list"),
+    ("source", "add"),
+    ("ask",),
+    ("history",),
+    ("artifact", "list"),
+    ("generate", "report"),
+    ("download", "report"),
+    ("share", "status"),
+}
+TWO_PART_COMMAND_GROUPS = {"auth", "source", "artifact", "generate", "download", "share"}
+
+
 def require_notebooklm() -> str:
     """Resolve the notebooklm command from PATH."""
     path = shutil.which("notebooklm")
@@ -33,6 +50,17 @@ def require_notebooklm() -> str:
     )
 
 
+def command_supports_json(args: list[str]) -> bool:
+    """Return whether the wrapped notebooklm command supports --json."""
+    if not args:
+        return False
+    if len(args) > 1 and args[0] in TWO_PART_COMMAND_GROUPS:
+        key = tuple(args[:2])
+    else:
+        key = tuple(args[:1])
+    return key in JSON_SUPPORTED_COMMANDS
+
+
 def build_command(
     args: list[str],
     *,
@@ -43,7 +71,7 @@ def build_command(
     command = ["notebooklm", *args]
     if notebook_id:
         command.extend(["-n", notebook_id])
-    if json_output:
+    if json_output and command_supports_json(args):
         command.append("--json")
     return command
 
@@ -69,6 +97,11 @@ def run_notebooklm(
     json_output: bool = False,
 ) -> dict | str:
     """Run notebooklm and optionally parse JSON output."""
+    if json_output and not command_supports_json(args):
+        raise RuntimeError(
+            f"JSON output is not supported for command: {' '.join(args)}"
+        )
+
     command = build_command(
         args,
         notebook_id=notebook_id,

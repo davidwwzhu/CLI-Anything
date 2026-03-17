@@ -47,7 +47,7 @@ cli-anything-notebooklm --json notebook list
 
 | Group | Purpose |
 | --- | --- |
-| `auth` | login and auth status |
+| `auth` | login and auth validation |
 | `notebook` | notebook list, create, summary |
 | `source` | source listing and URL add |
 | `chat` | ask questions and inspect history |
@@ -60,12 +60,12 @@ cli-anything-notebooklm --json notebook list
 1. Check auth with `cli-anything-notebooklm auth status`
 2. Discover notebook IDs with `cli-anything-notebooklm --json notebook list`
 3. Use explicit `--notebook` for follow-up commands
-4. Prefer `--json` for list and inspection commands
+4. Prefer `--json` only where the upstream `notebooklm` command supports it
 
 ## Agent Guidance
 
 - Prefer explicit notebook IDs with `--notebook`.
-- Use `--json` for machine-readable output.
+- Use `--json` for machine-readable output only on commands that support it upstream.
 - Treat this harness as experimental and unofficial.
 - Do not expose auth files or cookies in logs.
 - NotebookLM is a Google product; this harness is unofficial and not affiliated with Google.

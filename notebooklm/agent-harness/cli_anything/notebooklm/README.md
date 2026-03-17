@@ -38,7 +38,7 @@ python3 -m playwright install chromium
 # Show help
 cli-anything-notebooklm --help
 
-# Check auth state
+# Check auth state (wraps `notebooklm auth check`)
 cli-anything-notebooklm auth status
 
 # List notebooks
@@ -57,7 +57,7 @@ python3 -m cli_anything.notebooklm.notebooklm_cli --help
 
 | Group | Purpose |
 | --- | --- |
-| `auth` | login, auth status, and lightweight auth checks |
+| `auth` | login helpers and authentication checks |
 | `notebook` | list, create, and summarize notebooks |
 | `source` | inspect sources and add URL sources |
 | `chat` | ask questions and inspect history |
@@ -78,7 +78,7 @@ cli-anything-notebooklm artifact generate-report --notebook nb_123
 ## For AI Agents
 
 - Prefer explicit notebook IDs with `--notebook` instead of relying on ambient state.
-- Use `--json` whenever the command supports machine-readable output.
+- Use `--json` only on commands whose upstream `notebooklm` subcommand supports machine-readable output.
 - Treat NotebookLM auth state as sensitive local data and never print cookie or storage files.
 - Treat this harness as a thin wrapper around `notebooklm`, not a reimplementation of NotebookLM.
 

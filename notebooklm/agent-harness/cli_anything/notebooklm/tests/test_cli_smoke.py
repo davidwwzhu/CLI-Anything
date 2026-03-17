@@ -56,6 +56,25 @@ class TestSubcommandHelp:
         assert "List notebooks" in result.output
 
 
+class TestCommandRouting:
+    def test_auth_status_routes_to_auth_check(self, monkeypatch):
+        calls = []
+
+        def fake_run(args, **kwargs):
+            calls.append((args, kwargs))
+            return {"ok": True}
+
+        monkeypatch.setattr(
+            "cli_anything.notebooklm.notebooklm_cli.run_notebooklm",
+            fake_run,
+        )
+
+        result = CliRunner().invoke(cli, ["auth", "status"])
+
+        assert result.exit_code == 0
+        assert calls == [(["auth", "check"], {"json_output": False})]
+
+
 class TestModuleExecution:
     def test_python_m_module_help_emits_output(self):
         result = subprocess.run(
